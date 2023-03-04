@@ -712,8 +712,7 @@ func (c *StreamConfig) Build() (*internet.StreamConfig, error) {
 		tm := serial.ToTypedMessage(ts)
 		config.SecuritySettings = append(config.SecuritySettings, tm)
 		config.SecurityType = tm.Type
-	}
-	if strings.EqualFold(c.Security, "reality") {
+	} else if strings.EqualFold(c.Security, "reality") {
 		if config.ProtocolName != "tcp" && config.ProtocolName != "http" && config.ProtocolName != "grpc" && config.ProtocolName != "domainsocket" {
 			return nil, newError("REALITY only supports TCP, H2, gRPC and DomainSocket for now.")
 		}
@@ -727,6 +726,10 @@ func (c *StreamConfig) Build() (*internet.StreamConfig, error) {
 		tm := serial.ToTypedMessage(ts)
 		config.SecuritySettings = append(config.SecuritySettings, tm)
 		config.SecurityType = tm.Type
+	} else if strings.EqualFold(c.Security, "xtls") {
+		return nil, newError(`Please use flow "xtls-rprx-vision" with TLS or REALITY.`)
+	} else if len(c.Security) != 0 {
+		return nil, newError(`Unknown security "` + c.Security + `".`)
 	}
 	if c.TCPSettings != nil {
 		ts, err := c.TCPSettings.Build()
